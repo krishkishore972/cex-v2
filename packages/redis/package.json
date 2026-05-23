@@ -1,5 +1,5 @@
 {
-  "name": "http",
+  "name": "@repo/redis",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -10,9 +10,11 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@types/express": "^5.0.6",
-    "express": "^5.2.1",
-    "@repo/redis": "workspace:*",
-    "@repo/common": "workspace:*"
+    "@types/redis": "^4.0.11",
+    "redis": "^5.12.1"
+  },
+  "exports":{
+    ".": "./index.ts"
   }
+
 }

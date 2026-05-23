@@ -1,5 +1,5 @@
 {
-  "name": "http",
+  "name": "@repo/common",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -10,9 +10,11 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@types/express": "^5.0.6",
-    "express": "^5.2.1",
-    "@repo/redis": "workspace:*",
-    "@repo/common": "workspace:*"
+    "@types/jsonwebtoken": "^9.0.10",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.4.3"
+  },
+  "exports":{
+    ".": "./index.ts"
   }
 }

@@ -46,6 +46,12 @@ export class OrderBook {
         }
     }
 
+    ticker() {
+        return `${this.baseAsset}/${this.quoteAsset}`;
+    }
+
+
+
 
 
 

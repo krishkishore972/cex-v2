@@ -10,9 +10,12 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@types/express": "^5.0.6",
-    "express": "^5.2.1",
+    "@repo/common": "workspace:*",
+    "@repo/db": "workspace:*",
     "@repo/redis": "workspace:*",
-    "@repo/common": "workspace:*"
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1"
   }
 }

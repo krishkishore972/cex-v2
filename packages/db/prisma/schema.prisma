@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  username  String
+  password  String
+
+  orders    Order[]
+  balances  Balance[]
+}
+
+model Balance {
+  id        String   @id @default(uuid())
+
+  userId    String
+  user      User     @relation(references: [id], fields: [userId])
+
+  asset     String
+  available Int
+  locked    Int
+
+  @@unique([userId, asset])
+}
+
+model Order {
+  id          String       @id @default(uuid())
+
+  userId      String
+  user        User         @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  market      OrderMarket
+  price       Int
+  qty         Int
+  filledQty   Int          @default(0)
+
+  side        OrderSide
+  type        OrderType
+  status      OrderStatus  @default(OPEN)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  buyFills    Fill[]       @relation("buy_order_fill")
+  sellFills   Fill[]       @relation("sell_order_fill")
+}
+
+model Fill {
+  id          String      @id @default(uuid())
+
+  market      OrderMarket
+  price       Int
+  qty         Int
+
+  buyerId     String
+  sellerId    String
+
+  makerId     String
+  takerId     String
+
+  buyOrderId  String
+  buyOrder    Order       @relation("buy_order_fill", references: [id], fields: [buyOrderId])
+
+  sellOrderId String
+  sellOrder   Order       @relation("sell_order_fill", references: [id], fields: [sellOrderId])
+
+  createdAt   DateTime    @default(now())
+}
+
+enum OrderStatus {
+  OPEN
+  FILLED
+  CANCELLED
+  PARTIALLY_FILLED
+}
+
+enum OrderType {
+  LIMIT
+  MARKET
+}
+
+enum OrderMarket {
+  AXIS
+  TATA
+}
+
+enum OrderSide {
+  SELL
+  BUY
+}

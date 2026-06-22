@@ -1,5 +1,5 @@
 import { createClient, type RedisClientType } from "redis";
-
+import type { MessageFromApi } from "@repo/common";
 type OrderResponse = {
     identifier:string,
     filledQty:number,
@@ -25,12 +25,13 @@ class RedisManager {
   private pendingResponses: Map<string,PendingResolve>;
 
   // when the class is instantiated we connect to redis and start polling the response queue
-  constructor() {
-    this.client = createClient();
-    this.subscriber = createClient();
+    constructor() {
+    this.client = createClient({ url: process.env.REDIS_URL });
+    this.subscriber = createClient({ url: process.env.REDIS_URL });
     this.pendingResponses = new Map();
     this.initClients();
   }
+
 
 // when the class is instantiated we connect to redis and start polling the response queue
   private async initClients() {
@@ -42,6 +43,35 @@ class RedisManager {
         console.log('err while connecting to redis',error);
     }
   }
+
+  public sendToApi(clientId:string,message:MessageFromApi){
+    this.client.publish(clientId,JSON.stringify(message));
+  }
+
+  /**
+   * Blocks and pops a message from a given Redis queue.
+   */
+  public async popFromQueue(queueName: string): Promise<string | null> {
+    try {
+      const response = await this.client.brPop(queueName, 0);
+      return response ? response.element : null;
+    } catch (error) {
+      console.error(`Error popping from queue ${queueName}:`, error);
+      return null;
+    }
+  }
+  /**
+   * Pushes a JSON response back onto the client's return queue.
+   */
+  public async pushToQueue(queueName: string, data: any): Promise<number> {
+    try {
+      return await this.client.lPush(queueName, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Error pushing to queue ${queueName}:`, error);
+      throw error;
+    }
+  }
+
 
 // when we send an order we push it to a redis list, we also generate a unique identifier for the order and include it in the data we push to redis, this identifier will be used to match the response with the pending promise
 async sendOrder(data:any) {

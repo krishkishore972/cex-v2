@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@types/redis": "^4.0.11",
-    "redis": "^5.12.1"
+    "redis": "^5.12.1",
+    "@repo/common": "workspace:*"
   },
+
   "exports":{
     ".": "./index.ts"
   }
